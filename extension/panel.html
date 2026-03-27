@@ -291,64 +291,6 @@
       padding: 20px 0;
     }
 
-    /* セットアップオーバーレイ */
-    #setupOverlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15,15,15,0.95);
-      z-index: 1000;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
-      text-align: center;
-      backdrop-filter: blur(4px);
-    }
-    .setup-card {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 24px;
-      width: 100%;
-      max-width: 300px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .setup-card h2 { font-size: 18px; margin-bottom: 16px; color: #ff4444; }
-    .setup-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      text-align: left;
-      margin-bottom: 16px;
-    }
-    .step-num {
-      background: #ff0000;
-      color: #fff;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: bold;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .step-text { font-size: 13px; color: #ccc; line-height: 1.4; }
-    .btn-retry {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    .btn-retry:hover { background: #444; }
-
   </style>
 </head>
 <body>
@@ -374,8 +316,8 @@
      ========================= -->
 <div id="page-main" class="content active">
   <div id="hostWarning" class="host-warning">
-    ⚠️ 接続プログラム（Native Host）が見つかりません。<br>
-    <code>ex(dist)/host/install.bat</code> を実行してください。
+    ⚠️ Native Hostが見つかりません。<br>
+    <code>ex/host/install.bat</code> を実行してください。
   </div>
 
   <div id="ytContent" style="display:none">
@@ -494,25 +436,6 @@
     変更は自動的に保存されます。<br>
     サイドバー表示を使うと、ブラウザの横にずっと表示しておけます。
   </p>
-</div>
-
-<div id="setupOverlay">
-  <div class="setup-card">
-    <h2>セットアップが必要です</h2>
-    <div class="setup-step">
-      <div class="step-num">1</div>
-      <div class="step-text">フォルダ内の <code>ex(dist)/host/install.bat</code> をダブルクリックして実行してください。</div>
-    </div>
-    <div class="setup-step">
-      <div class="step-num">2</div>
-      <div class="step-text">黒い画面が出てくるので、指示に従って完了させてください。</div>
-    </div>
-    <div class="setup-step">
-      <div class="step-num">3</div>
-      <div class="step-text">完了後、下のボタンを押して再接続を確認してください。</div>
-    </div>
-    <button id="btnRetryConnect" class="btn-retry">再接続を試みる</button>
-  </div>
 </div>
 
 <script src="panel.js"></script>

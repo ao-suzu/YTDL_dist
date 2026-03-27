@@ -34,11 +34,7 @@ const els = {
   manualUrlInput: document.getElementById('manualUrlInput'),
   manualFormatSelect: document.getElementById('manualFormatSelect'),
   manualQualitySelect: document.getElementById('manualQualitySelect'),
-  manualDownloadBtn: document.getElementById('manualDownloadBtn'),
-
-  // 配布用：セットアップ関連
-  setupOverlay: document.getElementById('setupOverlay'),
-  btnRetryConnect: document.getElementById('btnRetryConnect')
+  manualDownloadBtn: document.getElementById('manualDownloadBtn')
 };
 
 let currentPageInfo = null;
@@ -49,21 +45,11 @@ async function init() {
   setupDownloadAction();
   
   // Native Host確認
-  checkConnection();
-
-  if (els.btnRetryConnect) {
-    els.btnRetryConnect.addEventListener('click', () => {
-      els.btnRetryConnect.textContent = '確認中...';
-      els.btnRetryConnect.disabled = true;
-      checkConnection();
-      setTimeout(() => {
-        if (els.btnRetryConnect) {
-          els.btnRetryConnect.textContent = '再接続を試みる';
-          els.btnRetryConnect.disabled = false;
-        }
-      }, 1000);
-    });
-  }
+  chrome.runtime.sendMessage({ action: 'ping' }, res => {
+    if (chrome.runtime.lastError || !res?.available) {
+      els.hostWarning.style.display = 'block';
+    }
+  });
 
   // UIモード読み込み
   chrome.runtime.sendMessage({ action: 'getUiMode' }, res => {
@@ -106,23 +92,6 @@ async function init() {
 
   // 初回の動画検出
   detectVideo();
-}
-
-/**
- * Native Hostとの接続を確認し、失敗していればセットアップガイドを表示
- */
-function checkConnection() {
-  chrome.runtime.sendMessage({ action: 'ping' }, res => {
-    const isAvailable = !chrome.runtime.lastError && res?.available;
-    
-    if (!isAvailable) {
-      if (els.setupOverlay) els.setupOverlay.style.display = 'flex';
-      if (els.hostWarning) els.hostWarning.style.display = 'block';
-    } else {
-      if (els.setupOverlay) els.setupOverlay.style.display = 'none';
-      if (els.hostWarning) els.hostWarning.style.display = 'none';
-    }
-  });
 }
 
 function setupTabs() {
@@ -194,6 +163,14 @@ async function detectVideo() {
 
   els.notYouTube.style.display = 'none';
   els.ytContent.style.display = 'block';
+
+  // 前回の情報をクリア（キャッシュクリア）
+  currentPageInfo = null; 
+  els.videoTitle.textContent = '読み込み中...';
+  els.thumbnailWrap.innerHTML = '<div class="loading-spinner"></div>'; 
+  els.downloadBtn.disabled = true; // 検出完了までボタンを無効化
+  els.downloadBtn.style.opacity = '0.5';
+
   els.urlInput.value = url;
 
   let fallbackTitle = tab.title || url;
@@ -257,6 +234,8 @@ async function detectVideo() {
       }
 
       els.videoTitle.textContent = info.title || fallbackTitle;
+      els.downloadBtn.disabled = false; // 検出完了
+      els.downloadBtn.style.opacity = '1';
       
       const badgeText = isPlaylistDisplay ? 'PLAYLIST' : 'VIDEO';
       const badgeHtml = `<div class="type-badge">${badgeText}</div>`;
@@ -302,6 +281,8 @@ async function detectVideo() {
     }
 
     els.videoTitle.textContent = fallbackTitle;
+    els.downloadBtn.disabled = false;
+    els.downloadBtn.style.opacity = '1';
     
     const badgeText = (hasListParamsFallback || isPlaylistOnlyFallback) ? 'PLAYLIST' : 'VIDEO';
     const badgeHtml = `<div class="type-badge">${badgeText}</div>`;
