@@ -1,102 +1,61 @@
-# YT Downloader v1.1.0 - Chrome拡張機能
+# YT Downloader - Chrome拡張機能
 
 YouTubeの動画・音楽をローカルにダウンロードするChrome拡張機能。  
-Chrome Native Messaging を使ってローカルの `yt-dlp` を呼び出す仕組みです。  
-**Pythonのインストール不要**で動作します。
-
----
-
-## ダウンロード
-
-[最新版をダウンロード（Releases）](https://github.com/ao-suzu/YTDL_dist/releases/latest)
-
----
-
-## 動作環境
-
-| 項目 | 要件 |
-| --- | --- |
-| OS | Windows 10 / 11 |
-| ブラウザ | Google Chrome（最新版推奨） |
-| Python | 不要（このdist版はすべて同梱済み） |
+Chrome Native Messaging を使ってローカルの `yt-dlp` を呼び出す仕組みだよ。
 
 ---
 
 ## フォルダ構成
 
-```
-YTDL_dist/
-├── extension/          ← Chrome拡張機能（Chromeに読み込む）
-│   ├── manifest.json
-│   ├── panel.html / panel.js
-│   ├── background.js
-│   └── ...
-│
-├── host/               ← バックグラウンド処理を行う実行ファイル
-│   ├── host.exe        ← 通信とダウンロード制御
-│   ├── yt-dlp.exe      ← YouTubeダウンロードのコア
-│   └── ffmpeg.exe      ← 音声・動画変換ツール
-│
-└── install.bat         ← 初回セットアップ用スクリプト
+```text
+extension/          ← Chrome拡張機能（これをChromeに読み込む）
+├── manifest.json
+├── panel.html / panel.js
+├── background.js
+└── ...
+
+host/               ← Native Messaging Host (Python環境)
+├── host.py         ← Pythonブリッジ本体
+├── ffmpeg.exe      ← 動画・音声変換ツール
+├── install.bat     ← セットアップスクリプト起動用
+├── install.ps1     ← インストールスクリプト本体
+└── (その他UIツール等)
 ```
 
 ---
 
 ## セットアップ手順
 
-### 1. ZIPを展開する
+### 1. Chrome に拡張機能を読み込む
 
-ダウンロードした ZIP ファイルを任意のフォルダに展開してください。  
-展開後のフォルダは**移動しないでください**（パスが変わるとインストールが無効になります）。
-
-### 2. Chrome に拡張機能を読み込む
-
-1. Chrome で `chrome://extensions/` を開く
-2. 右上の「デベロッパーモード」を ON にする
+1. Chromeで `chrome://extensions/` を開く
+2. 右上の「デベロッパーモード」をONにする
 3. 「パッケージ化されていない拡張機能を読み込む」をクリック
-4. 展開したフォルダ内の `extension/` フォルダを選択
-5. 表示された **拡張機能ID（英数字32文字のランダムな文字列）をコピー** しておく
+4. `extension/` フォルダを選択
+5. **表示された「拡張機能ID」（32文字）をコピーしておく**
 
-### 3. バックグラウンド連携の設定
+### 2. Native Host をインストール
 
-1. `install.bat` をダブルクリック
-2. コマンドプロンプトが開いたら、コピーした拡張機能IDを貼り付けて Enter
-3. 「完了しました」と表示されたら Chrome を再起動
+1. `host/install.bat` をダブルクリック
+2. 青い黒画面(PowerShell)が開いたら、さきほどコピーした拡張機能IDを貼り付けてEnterを押す
+    - (※ yt-dlp と Pillow が自動で `pip install` されます)
+3. 完了したらChromeを再起動
 
-### 4. 使い方
+### 3. 使い方
 
-1. YouTube の動画ページを開く
+1. YouTubeの動画ページを開く
 2. 拡張機能アイコンをクリック
-3. 形式（MP3 / MP4 など）と品質を選ぶ
+3. 形式（MP3/MP4など）と品質を選ぶ
 4. 保存先フォルダを入力（空欄なら `~/Downloads`）
 5. 「ダウンロード」ボタンをクリック！
 
 ---
 
-## 同梱ツール
+## 依存ツール・環境
 
-| ツール | バージョン | 説明 |
-| --- | --- | --- |
-| yt-dlp.exe | 同梱済み | YouTubeダウンロードのコア |
-| ffmpeg.exe | 同梱済み | 音声・動画の変換処理 |
-
----
-
-## トラブルシューティング
-
-**ダウンロードが始まらない場合**
-
-- 拡張機能IDが正しく入力されているか確認してください
-- `install.bat` を再実行してみてください
-- Chrome を完全に再起動してみてください
-
-**インストール後にフォルダを移動した場合**
-
-- `install.bat` を再実行することでパスを再登録できます
-
----
-
-## 注意事項
-
-- 本ツールの使用は、各サービスの利用規約の範囲内でお願いします
-- 著作権のあるコンテンツのダウンロードには十分ご注意ください
+| ツール       | 説明                                                                     |
+| ------------ | ------------------------------------------------------------------------ |
+| Python 3.x   | 事前にPCにインストールし、PATH に通っている必要があります                |
+| yt-dlp       | `install.bat` 実行時に `pip` で自動インストールされます                  |
+| Pillow       | `install.bat` 実行時に `pip` で自動インストールされます (サムネ処理用)  |
+| ffmpeg.exe   | `host/` 直下に配置済みである必要があります                               |
